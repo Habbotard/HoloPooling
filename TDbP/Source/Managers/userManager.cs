@@ -561,10 +561,10 @@ namespace Holo.Managers
             Database dbClient = new Database(true, false, 49);
             try
             {
-                string[] banDetails = (string[])dbClient.getRow("SELECT date_expire,descr,ipaddress FROM users_bans WHERE userid = '" + userID + "'").ItemArray;
-                string[] userDetails = (string[])dbClient.getRow("SELECT name,rank,ipaddress_last FROM users WHERE id = '" + userID + "'").ItemArray;
+                DataRow dRow = dbClient.getRow("SELECT date_expire,descr,ipaddress FROM users_bans WHERE userid = '" + userID + "'");
+                DataRow dbRow = dbClient.getRow("SELECT name,rank,ipaddress_last FROM users WHERE id = '" + userID + "'");
 
-                if (banDetails.Length == 0 || userDetails.Length == 0)
+                if (dRow.Table.Rows.Count == 0 || dbRow.Table.Rows.Count == 0)
                 {
                     dbClient.Close();
                     return "holo.cast.banreport.null";
@@ -574,25 +574,25 @@ namespace Holo.Managers
                     string Note = "-";
                     string banPoster = "not available";
                     string banPosted = "not available";
-                    string[] logEntries = (string[])dbClient.getRow("SELECT userid,note,timestamp FROM system_stafflog WHERE action = 'ban' AND targetid = '" + userID + "' ORDER BY id ASC").ItemArray; // Get latest stafflog entry for this action (if exists)
-                    if (logEntries.Length > 0) // system_stafflog table could be cleaned up
+                    DataRow DRow = dbClient.getRow("SELECT userid,note,timestamp FROM system_stafflog WHERE action = 'ban' AND targetid = '" + userID + "' ORDER BY id ASC"); // Get latest stafflog entry for this action (if exists)
+                    if (DRow.Table.Rows.Count > 0) // system_stafflog table could be cleaned up
                     {
-                        if (logEntries[1] != "")
-                            Note = logEntries[1];
-                        banPoster = dbClient.getString("SELECT name FROM users WHERE id = '" + logEntries[0] + "'");
-                        banPosted = logEntries[2];
+                        if (Convert.ToString(DRow[1]) != "")
+                            Note = Convert.ToString(DRow[1]);
+                        banPoster = dbClient.getString("SELECT name FROM users WHERE id = '" + Convert.ToString(DRow[0]) + "'");
+                        banPosted = Convert.ToString(DRow[2]);
                     }
                     dbClient.Close();
 
                     StringBuilder Report = new StringBuilder(stringManager.getString("banreport_header") + " ");
-                    Report.Append(userDetails[0] + " [" + userID + "]" + "\r"); // Append username and user ID
-                    Report.Append(stringManager.getString("common_userrank") + ": " + userDetails[1] + "\r"); // Append user's rank
-                    Report.Append(stringManager.getString("common_ip") + ": " + userDetails[2] + "\r"); // Append the IP address of user
+                    Report.Append(Convert.ToString(dbRow[0]) + " [" + userID + "]" + "\r"); // Append username and user ID
+                    Report.Append(stringManager.getString("common_userrank") + ": " + Convert.ToString(dbRow[1]) + "\r"); // Append user's rank
+                    Report.Append(stringManager.getString("common_ip") + ": " + Convert.ToString(dbRow[2]) + "\r"); // Append the IP address of user
                     Report.Append(stringManager.getString("banreport_banner") + ": " + banPoster + "\r"); // Append username of banner
                     Report.Append(stringManager.getString("banreport_posted") + ": " + banPosted + "\r"); // Append datetime when ban was posted
-                    Report.Append(stringManager.getString("banreport_expires") + ": " + banDetails[0] + "\r"); // Append datetime when ban expires
-                    Report.Append(stringManager.getString("banreport_reason") + ": " + banDetails[1] + "\r"); // Append the reason that went with the ban
-                    Report.Append(stringManager.getString("banreport_ipbanflag") + ": " + (banDetails[2] != "").ToString().ToLower() + "\r"); // Append true/false for the IP ban status
+                    Report.Append(stringManager.getString("banreport_expires") + ": " + Convert.ToString(dRow[0]) + "\r"); // Append datetime when ban expires
+                    Report.Append(stringManager.getString("banreport_reason") + ": " + Convert.ToString(dRow[1]) + "\r"); // Append the reason that went with the ban
+                    Report.Append(stringManager.getString("banreport_ipbanflag") + ": " + (Convert.ToString(dRow[2]) != "").ToString().ToLower() + "\r"); // Append true/false for the IP ban status
                     Report.Append(stringManager.getString("banreport_staffnote") + ": " + Note); // Append the staffnote that went with the ban
                     return Report.ToString();
                 }
@@ -615,9 +615,10 @@ namespace Holo.Managers
             Database dbClient = new Database(true, false, 51);
             try
             {
-                string[] banDetails = (string[])dbClient.getRow("SELECT userid,date_expire,descr FROM users_bans WHERE ipaddress = '" + IP + "'").ItemArray;
+                DataRow dRow = dbClient.getRow("SELECT userid,date_expire,descr FROM users_bans WHERE ipaddress = '" + IP + "'");
+                //-// string[] banDetails = (string[])dbClient.getRow("SELECT userid,date_expire,descr FROM users_bans WHERE ipaddress = '" + IP + "'").ItemArray;
 
-                if (banDetails.Length == 0)
+                if (dRow.Table.Rows.Count == 0)
                 {
                     dbClient.Close();
                     return "holo.cast.banreport.null";
@@ -627,28 +628,29 @@ namespace Holo.Managers
                     string Note = "-";
                     string banPoster = "not available";
                     string banPosted = "not available";
-                    string[] logEntries = (string[])dbClient.getRow("SELECT userid,note,timestamp FROM system_stafflog WHERE action = 'ban' AND targetid = '" + banDetails[0] + "' ORDER BY id DESC").ItemArray; // Get latest stafflog entry for this action (if exists)
-                    if (logEntries.Length > 0) // system_stafflog table could be cleaned up
+                    DataRow DRow = dbClient.getRow("SELECT userid,note,timestamp FROM system_stafflog WHERE action = 'ban' AND targetid = '" + Convert.ToString(dRow[0]) + "' ORDER BY id ASC"); // Get latest stafflog entry for this action (if exists)
+                    //-// string[] logEntries = (string[])dbClient.getRow("SELECT userid,note,timestamp FROM system_stafflog WHERE action = 'ban' AND targetid = '" + banDetails[0] + "' ORDER BY id DESC").ItemArray; // Get latest stafflog entry for this action (if exists)
+                    if (DRow.Table.Rows.Count > 0) // system_stafflog table could be cleaned up
                     {
-                        if (logEntries[1] != "")
-                            Note = logEntries[1];
-                        banPoster = dbClient.getString("SELECT name FROM users WHERE id = '" + logEntries[0] + "'");
-                        banPosted = logEntries[2];
+                        if (Convert.ToString(DRow[1]) != "")
+                            Note = Convert.ToString(DRow[1]);
+                        banPoster = dbClient.getString("SELECT name FROM users WHERE id = '" + Convert.ToString(DRow[0]) + "'");
+                        banPosted = Convert.ToString(DRow[2]);
                     }
 
                     StringBuilder Report = new StringBuilder(stringManager.getString("banreport_header") + " ");
                     Report.Append(IP + "\r"); // Append IP address
                     Report.Append(stringManager.getString("banreport_banner") + ": " + banPoster + "\r"); // Append username of banner
                     Report.Append(stringManager.getString("banreport_posted") + ": " + banPosted + "\r"); // Append datetime when ban was posted
-                    Report.Append(stringManager.getString("banreport_expires") + ": " + banDetails[0] + "\r"); // Append datetime when ban expires
-                    Report.Append(stringManager.getString("banreport_reason") + ": " + banDetails[1] + "\r"); // Append the reason that went with the ban
-                    Report.Append(stringManager.getString("banreport_ipbanflag") + ": " + (banDetails[2] != "").ToString().ToLower() + "\r"); // Append true/false for the IP ban status
+                    Report.Append(stringManager.getString("banreport_expires") + ": " + Convert.ToString(dRow[0]) + "\r"); // Append datetime when ban expires
+                    Report.Append(stringManager.getString("banreport_reason") + ": " + Convert.ToString(dRow[1]) + "\r"); // Append the reason that went with the ban
+                    Report.Append(stringManager.getString("banreport_ipbanflag") + ": " + (Convert.ToString(dRow[2]) != "").ToString().ToLower() + "\r"); // Append true/false for the IP ban status
                     Report.Append(stringManager.getString("banreport_staffnote") + ": " + Note + "\r\r"); // Append the staffnote that went with the ban
 
                     DataColumn dCol = dbClient.getColumn("SELECT name FROM users WHERE ipaddress_last = '" + IP + "'");
                     //string[] affectedUsernames = dataHandling.dColToArray(dCol);
                     Report.Append(stringManager.getString("banreport_affectedusernames") + ":");
-                    foreach (DataRow dRow in dCol.Table.Rows)
+                    foreach (DataRow dbRow in dCol.Table.Rows)
                         Report.Append("\r - " + Convert.ToString(dRow["name"]));
                     dbClient.Close();
                     return Report.ToString();
