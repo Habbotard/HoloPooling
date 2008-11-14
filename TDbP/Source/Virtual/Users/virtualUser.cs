@@ -1834,7 +1834,7 @@ namespace Holo.Virtual.Users
                                     dbClient.addParameterWithValue("userid", userID);
                                     dbClient.addParameterWithValue("badgeida", currentPacket.Substring(4, badgeLength));
                                     dbClient.addParameterWithValue("badgeidb", _nowBadge);
-                                    dbClient.addParameterWithValue("badge_status", badgeEnabled);
+                                    dbClient.addParameterWithValue("badge_status", badgeEnabled.ToString());
                                     dbClient.Open();
                                     if (dbClient.findsResult("SELECT userid FROM users_badges WHERE userid = @userid AND badgeid = @badgeida") == false)
                                     {
