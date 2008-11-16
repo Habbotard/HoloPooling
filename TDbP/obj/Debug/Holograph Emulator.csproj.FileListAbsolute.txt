@@ -77,3 +77,10 @@ C:\Documents and Settings\Christopher\My Documents\Retro\Holograph\Pooling\R24 P
 C:\Documents and Settings\Christopher\My Documents\Retro\Holograph\Pooling\R24 Public Beta\bin\Debug\Holograph Emulator.pdb
 C:\Documents and Settings\Christopher\My Documents\Retro\Holograph\Pooling\R24 Public Beta\obj\Debug\Holograph Emulator.exe
 C:\Documents and Settings\Christopher\My Documents\Retro\Holograph\Pooling\Rev1\obj\Debug\Holograph Emulator.pdb
+C:\Documents and Settings\Administrator\Desktop\Public COPY\TDbP\TDbP\obj\Debug\Holograph Emulator.pdb
+C:\Documents and Settings\Administrator\Desktop\Public COPY\TDbP\TDbP\bin\Debug\Holograph Emulator.exe
+C:\Documents and Settings\Administrator\Desktop\Public COPY\TDbP\TDbP\bin\Debug\Holograph Emulator.pdb
+C:\Documents and Settings\Administrator\Desktop\Public COPY\TDbP\TDbP\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrator\Desktop\Public COPY\TDbP\TDbP\obj\Debug\Holo.Properties.Resources.resources
+C:\Documents and Settings\Administrator\Desktop\Public COPY\TDbP\TDbP\obj\Debug\Holograph Emulator.csproj.GenerateResource.Cache
+C:\Documents and Settings\Administrator\Desktop\Public COPY\TDbP\TDbP\obj\Debug\Holograph Emulator.exe
