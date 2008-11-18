@@ -100,7 +100,7 @@ namespace Holo.Virtual.Users.Messenger
             StringBuilder Updates = new StringBuilder();
             try
             {
-                foreach (virtualBuddy Buddy in Buddies.Values)
+                foreach (virtualBuddy Buddy in ((Hashtable)Buddies.Clone()).Values)
                 {
                     if (Buddy.Updated)
                     {

@@ -116,7 +116,7 @@ namespace Holo.Virtual.Rooms.Games
                 int[] Amounts = new int[3]; // [0] = waiting, [1] = started, [2] = ended
                 StringBuilder List = new StringBuilder();
 
-                foreach (Game Game in Games.Values)
+                foreach (Game Game in ((Hashtable)Games.Clone()).Values)
                 {
                     List.Append(Encoding.encodeVL64(Game.ID) + Game.Name + Convert.ToChar(2) + Encoding.encodeVL64(Game.Owner.roomUID) + Game.Owner.User._Username + Convert.ToChar(2));
                     if (isBattleBall == false) // SnowStorm game

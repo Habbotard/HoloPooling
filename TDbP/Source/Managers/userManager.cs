@@ -199,7 +199,7 @@ namespace Holo.Managers
         {
             try
             {
-                foreach (virtualUser User in _Users.Values)
+                foreach (virtualUser User in ((Hashtable)_Users.Clone()).Values)
                     User.sendData(Data);
             }
             catch { }
@@ -212,7 +212,7 @@ namespace Holo.Managers
         /// <param name="Data">The packet to send.</param>
         public static void sendToRank(byte Rank, bool includeHigher, string Data)
         {
-            foreach (virtualUser User in _Users.Values)
+            foreach (virtualUser User in ((Hashtable)_Users.Clone()).Values)
             {
                 if (User._Rank < Rank || (includeHigher == false && User._Rank > Rank))
                     continue;

@@ -163,7 +163,7 @@ namespace Holo.Managers
                 int Count = 0;
                 StringBuilder List = new StringBuilder();
                 
-                foreach (virtualEvent Event in Events[categoryID - 1].Values)
+                foreach (virtualEvent Event in ((Hashtable)Events[categoryID - 1].Clone()).Values)
                 {
                     if (userManager.containsUser(Event.userID)) // Hoster is online
                     {

@@ -45,7 +45,7 @@ namespace Holo.Virtual.Rooms
         {
             try
             {
-                foreach (virtualRoomUser roomUser in _Users.Values)
+                foreach (virtualRoomUser roomUser in ((Hashtable)_Users.Clone()).Values)
                     if (roomUser.User._hasRights || roomUser.User._isOwner || rankManager.containsRight(roomUser.User._Rank, "fuse_pick_up_any_furni"))
                         roomUser.User.sendData(Data);
 
@@ -437,7 +437,7 @@ namespace Holo.Virtual.Rooms
                 if (roomUser.User._groupID > 0)
                 {
                     bool removeBadge = true;
-                    foreach (virtualRoomUser rUser in _Users.Values)
+                    foreach (virtualRoomUser rUser in ((Hashtable)_Users.Clone()).Values)
                     {
                         if (rUser.roomUID != roomUser.roomUID && rUser.User._groupID == roomUser.User._groupID)
                         {
@@ -556,7 +556,7 @@ namespace Holo.Virtual.Rooms
                 StringBuilder userList = new StringBuilder();
                 foreach (virtualBot roomBot in _Bots.Values)
                     userList.Append(roomBot.detailsString);
-                foreach (virtualRoomUser roomUser in _Users.Values)
+                foreach (virtualRoomUser roomUser in ((Hashtable)_Users.Clone()).Values)
                     userList.Append(roomUser.detailsString);
 
                 return userList.ToString();
@@ -572,7 +572,7 @@ namespace Holo.Virtual.Rooms
                 StringBuilder Statuses = new StringBuilder();
                 foreach (virtualBot roomBot in _Bots.Values)
                     Statuses.Append(roomBot.statusString + Convert.ToChar(13));
-                foreach (virtualRoomUser roomUser in _Users.Values)
+                foreach (virtualRoomUser roomUser in ((Hashtable)_Users.Clone()).Values)
                     Statuses.Append(roomUser.statusString + Convert.ToChar(13));
 
                 return Statuses.ToString();
@@ -586,7 +586,7 @@ namespace Holo.Virtual.Rooms
             get
             {
                 StringBuilder listBuilder = new StringBuilder(Encoding.encodeVL64(this.roomID) + Encoding.encodeVL64(_Users.Count));
-                foreach (virtualRoomUser roomUser in _Users.Values)
+                foreach (virtualRoomUser roomUser in ((Hashtable)_Users.Clone()).Values)
                     listBuilder.Append(roomUser.User._Username + Convert.ToChar(2));
 
                 return listBuilder.ToString();
@@ -623,7 +623,7 @@ namespace Holo.Virtual.Rooms
         {
             try
             {
-                foreach (virtualRoomUser roomUser in _Users.Values)
+                foreach (virtualRoomUser roomUser in ((Hashtable)_Users.Clone()).Values)
                     roomUser.User.sendData(Data);
             }
             catch { }
@@ -641,7 +641,7 @@ namespace Holo.Virtual.Rooms
         private void SENDDATASLEEP(string Data, int msSleep)
         {
             Thread.Sleep(msSleep);
-            foreach (virtualRoomUser roomUser in _Users.Values)
+            foreach (virtualRoomUser roomUser in ((Hashtable)_Users.Clone()).Values)
                 roomUser.User.sendData(Data);
         }
         /// <summary>
@@ -651,7 +651,7 @@ namespace Holo.Virtual.Rooms
         /// <param name="Data">The packet to send.</param>
         internal void sendData(int userID, string Data)
         {
-            foreach (virtualRoomUser roomUser in _Users.Values)
+            foreach (virtualRoomUser roomUser in ((Hashtable)_Users.Clone()).Values)
             {
                 if (roomUser.userID == userID)
                 {
@@ -667,7 +667,7 @@ namespace Holo.Virtual.Rooms
         /// <param name="Data">The packet to send.</param>
         internal void sendData(string Username, string Data)
         {
-            foreach (virtualRoomUser roomUser in _Users.Values)
+            foreach (virtualRoomUser roomUser in ((Hashtable)_Users.Clone()).Values)
             {
                 if (roomUser.User._Username == Username)
                 {
@@ -692,7 +692,7 @@ namespace Holo.Virtual.Rooms
         internal void sendNewVoteAmount(int voteAmount)
         {
             string Data = "EY" + Encoding.encodeVL64(voteAmount);
-            foreach (virtualRoomUser roomUser in _Users.Values)
+            foreach (virtualRoomUser roomUser in ((Hashtable)_Users.Clone()).Values)
             {
                 if (roomUser.hasVoted)
                     roomUser.User.sendData(Data);
@@ -944,7 +944,7 @@ namespace Holo.Virtual.Rooms
         }
         internal void refreshCoord(int X, int Y)
         {
-            foreach (virtualRoomUser roomUser in _Users.Values)
+            foreach (virtualRoomUser roomUser in ((Hashtable)_Users.Clone()).Values)
             {
                 if (roomUser.X == X && roomUser.Y == Y)
                 {
@@ -1050,7 +1050,7 @@ namespace Holo.Virtual.Rooms
             //sourceUser.statusManager.handleStatus("talk", "", Message.Length * 190);
 
             string Data = "@X" + Encoding.encodeVL64(sourceUser.roomUID) + Message + Convert.ToChar(2);
-            foreach (virtualRoomUser roomUser in _Users.Values)
+            foreach (virtualRoomUser roomUser in ((Hashtable)_Users.Clone()).Values)
             {
                 if (Math.Abs(roomUser.X - sourceUser.X) < 6 && Math.Abs(roomUser.Y - sourceUser.Y) < 6)
                 {
@@ -1083,7 +1083,7 @@ namespace Holo.Virtual.Rooms
             string Data = "@X" + Encoding.encodeVL64(sourceBot.roomUID) + Message + Convert.ToChar(2);
             //sourceBot.handleStatus("talk", "", Message.Length * 190);
 
-            foreach (virtualRoomUser roomUser in _Users.Values)
+            foreach (virtualRoomUser roomUser in ((Hashtable)_Users.Clone()).Values)
             {
                 if (Math.Abs(roomUser.X - sourceBot.X) < 6 && Math.Abs(roomUser.Y - sourceBot.Y) < 6)
                 {
@@ -1116,7 +1116,7 @@ namespace Holo.Virtual.Rooms
             sourceUser.statusManager.handleStatus("talk", "", Message.Length * 190);
 
             string Data = "@Z" + Encoding.encodeVL64(sourceUser.roomUID) + Message + Convert.ToChar(2);
-            foreach (virtualRoomUser roomUser in _Users.Values)
+            foreach (virtualRoomUser roomUser in ((Hashtable)_Users.Clone()).Values)
             {
                 //if (roomUser.roomUID != sourceUser.roomUID && roomUser.goalX == -1)
                 //{
@@ -1179,7 +1179,7 @@ namespace Holo.Virtual.Rooms
             }
 
             string Data = "@Y" + Encoding.encodeVL64(sourceUser.roomUID) + Message + Convert.ToChar(2);
-            foreach (virtualRoomUser roomUser in _Users.Values)
+            foreach (virtualRoomUser roomUser in ((Hashtable)_Users.Clone()).Values)
             {
                 if (roomUser.User._Username == Receiver)
                 {
@@ -2075,7 +2075,7 @@ namespace Holo.Virtual.Rooms
                 get
                 {
                     StringBuilder itemList = new StringBuilder();
-                    foreach (wallItem Item in _Items.Values)
+                    foreach (wallItem Item in ((Hashtable)_Items.Clone()).Values)
                         itemList.Append(Item.ToString() + Convert.ToChar(13));
 
                     return itemList.ToString();
@@ -2235,7 +2235,7 @@ namespace Holo.Virtual.Rooms
         internal void Crash()
         {
             #region User kicking
-            foreach (virtualRoomUser roomUser in _Users.Values)
+            foreach (virtualRoomUser roomUser in ((Hashtable)_Users.Clone()).Values)
             {
                 roomUser.User.sendData("@R");
                 roomUser.User.statusManager.Clear();

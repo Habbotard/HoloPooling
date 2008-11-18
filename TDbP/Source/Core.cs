@@ -12,9 +12,10 @@ namespace Holo
     public class Eucalypt
     {
         private static Thread serverMonitor = new Thread(new ThreadStart(monitorServer));
+        private static bool Jingle = true;
         public delegate void commonDelegate();
 
-        public static string serverVersion = "Pooling Server Version 1.500 (DB Pooling test)";
+        public static string serverVersion = "Pooling Server Version 1.510";
 
         public static string dbHost;
         public static int dbPort;
@@ -34,6 +35,21 @@ namespace Holo
         /// </summary>
         private static void Main()
         {
+
+            int nC = 262;
+            int nCs =  277;
+            int nD = 293;
+            int nDs = 311;
+            int nE =330;
+            int nF = 349;
+            int nFs = 370;
+            int nG = 392;
+            int nGs = 415;
+            int nA = 440;
+            int nAs = 466;
+            int nB = 494;
+            int NC = 523;
+
             Console.WindowHeight = Console.LargestWindowHeight - 25;
             Console.WindowWidth = Console.LargestWindowWidth - 25;
             Console.CursorVisible = false;
@@ -41,12 +57,68 @@ namespace Holo
             Out.WritePlain(serverVersion);
             Out.WritePlain("The Holograph Emulator Edit for improved database connection management (by Cecer1)");
             Out.WritePlain("Originally coded by Nillus, Modifications made by Werpo and Cecer1");
-            Out.WritePlain("V25 Compatible");
+            Out.WritePlain("Designed for R24");
             Out.WriteBlank();
             Out.WritePlain("BUILD");
             Out.WritePlain(" CORE: Eucalypt, C#.NET");
-            Out.WritePlain(" CLIENT: V24+");
+            Out.WritePlain(" CLIENT: R22-R24");
             Out.WriteBlank();
+
+            #region Jingle
+            if (Jingle)
+            {
+                Out.WriteBlank();
+                Out.WriteBlank();
+                Out.WriteBlank();
+
+                Console.Write("Jin"); Console.Beep(nB, 450);
+                Console.Write("gle"); Console.Beep(nB, 450);
+                Console.Write(" bells,\n"); Console.Beep(nB, 450); 
+
+                Console.Beep(32767, 450);
+
+                Console.Write("Jin"); Console.Beep(nB, 450);
+                Console.Write("gle"); Console.Beep(nB, 450);
+                Console.Write(" bells,\n"); Console.Beep(nB, 450); 
+
+                Console.Beep(32767, 450);
+
+                Console.Write("Jin"); Console.Beep(nB, 450);
+                Console.Write("gle"); Console.Beep(nD, 450);
+                Console.Write(" all"); Console.Beep(nG, 450);
+                Console.Write(" the"); Console.Beep(nA, 450);
+                Console.Write(" way.\n"); Console.Beep(nB, 450);
+
+                Console.Beep(32767, 450);
+
+                Console.Write("Oh"); Console.Beep(nC, 450);
+                Console.Write(" what"); Console.Beep(nC, 450);
+                Console.Write(" fun"); Console.Beep(nC, 450);
+                Console.Write(" it"); Console.Beep(nC, 450);
+                Console.Write(" is"); Console.Beep(nB, 450);
+                Console.Write(" to"); Console.Beep(nB, 450);
+                Console.Write(" ride,\n"); Console.Beep(nB, 450); 
+
+                Console.Beep(32767, 750);
+
+                Console.Write("In"); Console.Beep(nB, 450);
+                Console.Write(" a"); Console.Beep(nA, 450);
+                Console.Write(" one"); Console.Beep(nA, 450);
+                Console.Write(" horse"); Console.Beep(nB, 450);
+                Console.Write(" open"); Console.Beep(nA, 450);
+                Console.Write(" Sleigh!"); Console.Beep(nD, 1000); 
+
+                Console.Beep(32767, 1000);
+                Out.WriteBlank();
+                Out.WriteBlank();
+                Out.WriteBlank();
+            }
+            #endregion
+
+            Out.WritePlain("Designed for MySQL Connector Net: 5.2.4");
+            Out.WriteBlank();
+            Out.WriteBlank();
+
 
             Boot();
 
