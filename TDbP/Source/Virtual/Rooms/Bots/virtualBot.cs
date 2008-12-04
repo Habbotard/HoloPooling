@@ -137,10 +137,11 @@ namespace Holo.Virtual.Rooms.Bots
             this.Shouts = (string[])dataHandling.dColToArray(dCol);
 
             DataTable dTable = dbClient.getTable("SELECT words, replies, serve_replies, serve_item FROM roombots_texts_triggers WHERE id = '" + botID + "'");
-            int i = 0;
-            foreach (DataRow daRow in dTable.Rows)
+            this.chatTriggers = new chatTrigger[dTable.Rows.Count];
+            int i = 0; 
+            foreach (DataRow dbRow in dTable.Rows)
             {
-                this.chatTriggers[i] = new chatTrigger((Convert.ToString(dRow["words"])).Split('}'), (Convert.ToString(dRow["replies"])).Split('}'), (Convert.ToString(dRow["server_replies"])).Split('}'), Convert.ToString(dRow["server_item"]));
+                this.chatTriggers[i] = new chatTrigger((Convert.ToString(dbRow["words"]).ToLower()).Split('}'), (Convert.ToString(dbRow["replies"])).Split('}'), (Convert.ToString(dbRow["serve_replies"])).Split('}'), Convert.ToString(dbRow["serve_item"]));
                 i++;
             }
 
@@ -149,9 +150,9 @@ namespace Holo.Virtual.Rooms.Bots
             Coords = new Coord[dTable.Rows.Count];
             i = 0;
             
-            foreach (DataRow daRow in dTable.Rows)
+            foreach (DataRow dbRow in dTable.Rows)
             {
-                Coords[i] = new Coord(Convert.ToInt32(dRow["x"]), Convert.ToInt32(dRow["y"]));
+                Coords[i] = new Coord(Convert.ToInt32(dbRow["x"]), Convert.ToInt32(dbRow["y"]));
                 i++;
             }
 

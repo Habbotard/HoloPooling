@@ -84,3 +84,10 @@ C:\Documents and Settings\Administrator\Desktop\Public COPY\TDbP\TDbP\obj\Debug\
 C:\Documents and Settings\Administrator\Desktop\Public COPY\TDbP\TDbP\obj\Debug\Holo.Properties.Resources.resources
 C:\Documents and Settings\Administrator\Desktop\Public COPY\TDbP\TDbP\obj\Debug\Holograph Emulator.csproj.GenerateResource.Cache
 C:\Documents and Settings\Administrator\Desktop\Public COPY\TDbP\TDbP\obj\Debug\Holograph Emulator.exe
+C:\Users\pb\Documents\Retro\Holograph\Pooling\Pooling Resume\TDbP\obj\Debug\Holograph Emulator.pdb
+C:\Users\pb\Documents\Retro\Holograph\Pooling\Pooling Resume\TDbP\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\pb\Documents\Retro\Holograph\Pooling\Pooling Resume\TDbP\obj\Debug\Holo.Properties.Resources.resources
+C:\Users\pb\Documents\Retro\Holograph\Pooling\Pooling Resume\TDbP\obj\Debug\Holograph Emulator.csproj.GenerateResource.Cache
+C:\Users\pb\Documents\Retro\Holograph\Pooling\Pooling Resume\TDbP\bin\Debug\Holograph Emulator.exe
+C:\Users\pb\Documents\Retro\Holograph\Pooling\Pooling Resume\TDbP\bin\Debug\Holograph Emulator.pdb
+C:\Users\pb\Documents\Retro\Holograph\Pooling\Pooling Resume\TDbP\obj\Debug\Holograph Emulator.exe

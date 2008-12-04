@@ -649,7 +649,7 @@ namespace Holo.Virtual.Users
 
                                 bool canSeeHiddenNames = false;
 
-                                if (Type !=0) // Publicroom
+                                if (Type != 0) // Publicroom
                                     canSeeHiddenNames = rankManager.containsRight(_Rank, "fuse_enter_locked_rooms");
 
                                 foreach (DataRow dRow in dTable.Rows)
@@ -664,22 +664,31 @@ namespace Holo.Virtual.Users
                                             Navigator.Append(Encoding.encodeVL64(Convert.ToInt32(dRow["id"])) + Convert.ToString(dRow["name"]) + Convert.ToChar(2) + Convert.ToString(dRow["owner"]) + Convert.ToChar(2) + roomManager.getRoomState(Convert.ToInt32(dRow["state"])) + Convert.ToChar(2) + Encoding.encodeVL64(Convert.ToInt32(dRow["visitors_now"])) + Encoding.encodeVL64(Convert.ToInt32(dRow["visitors_max"])) + Convert.ToString(dRow["description"]) + Convert.ToChar(2));
                                     }
                                 }
-                                
+
                                 DataColumn dCol = dbClient.getColumn("SELECT id FROM room_categories WHERE parent = '" + cataID + "' AND (access_rank_min <= " + _Rank + " OR access_rank_hideforlower = '0') ORDER BY id ASC");
                                 if (dCol.Table.Rows.Count > 0) // Sub categories
                                 {
                                     StringBuilder sb = new StringBuilder();
+                                    System.Collections.Generic.List<int> emptyIDs = new System.Collections.Generic.List<int>();
+
                                     foreach (DataRow dRow in dCol.Table.Rows)
+                                    {
                                         sb.Append(" OR category = '" + Convert.ToString(dRow[0]) + "'");
+                                        emptyIDs.Add(Convert.ToInt32(dRow[0]));
+                                    }
                                     dTable = dbClient.getTable("SELECT SUM(visitors_now),SUM(visitors_max),category FROM rooms WHERE" + sb.ToString().Substring(3) + " GROUP BY category");
 
-                                    foreach(DataRow dRow in dTable.Rows)
+                                    foreach (DataRow dRow in dTable.Rows)
                                     {
                                         if (Convert.ToInt32(dRow[1]) > 0 && hideFull == 1 && Convert.ToInt32(dRow[0]) >= Convert.ToInt32(dRow[1]))
                                             continue;
 
                                         Navigator.Append(Encoding.encodeVL64(Convert.ToInt32(dRow[2])) + "H" + dbClient.getString("SELECT name FROM room_categories WHERE id = '" + Convert.ToString(dRow[2]) + "'") + Convert.ToChar(2) + Encoding.encodeVL64(Convert.ToInt32(dRow[0])) + Encoding.encodeVL64(Convert.ToInt32(dRow[1])) + Encoding.encodeVL64(cataID));
+                                        emptyIDs.Remove(Convert.ToInt32(dRow[2]));
                                     }
+
+                                    foreach (int emptyID in emptyIDs)
+                                        Navigator.Append(Encoding.encodeVL64(emptyID) + "H" + dbClient.getString("SELECT name FROM room_categories WHERE id = '" + emptyID + "'") + Convert.ToChar(2) + "HH" + Encoding.encodeVL64(cataID));
                                 }
                                 dbClient.Close();
 
@@ -1021,12 +1030,12 @@ namespace Holo.Virtual.Users
                         case "@X": // Modify guestroom, save name, state and show/hide ownername
                             {
                                 string[] packetContent = currentPacket.Substring(2).Split('/');
-                                if (packetContent[2] != "1" && packetContent[2] != "0")
+                                if (packetContent[3] != "1" && packetContent[2] != "0")
                                     packetContent[2] = "1";
                                 Database dbClient = new Database(false, true, 79);
                                 dbClient.addParameterWithValue("name", stringManager.filterSwearwords(packetContent[1]));
                                 dbClient.addParameterWithValue("state", roomManager.getRoomState(packetContent[2]));
-                                dbClient.addParameterWithValue("show", packetContent[2]);
+                                dbClient.addParameterWithValue("show", packetContent[3]);
                                 dbClient.addParameterWithValue("id", packetContent[0]);
                                 dbClient.addParameterWithValue("owner", _Username);
                                 dbClient.Open();
