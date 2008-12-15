@@ -283,7 +283,7 @@ namespace Holo.Managers
         /// Generates a string containing the packet to send the the user.
         /// </summary>
         /// <param name="Rank">The rank of the user.</param>
-        public static string generateCommands(byte Rank)
+        public static string generateCommands(byte Rank, int userID)
         {
             //Hashtable Commands = new Hashtable();
             string[] Commands = null;
@@ -311,57 +311,57 @@ namespace Holo.Managers
                 Cmds += ":chooser - Display everyone in the room%";
                 Cmds += ":furni - Display all furni in the room%";
 
-                if (rankManager.containsRight(Rank, "fuse_alert"))
+                if (rankManager.containsRight(Rank, "fuse_alert", userID))
                 {
                     Cmds += "%";
                     Cmds += ":alert NAME MESSAGE - Sends a moderator alert%";
                 }
 
-                if (rankManager.containsRight(Rank, "fuse_room_alert"))
+                if (rankManager.containsRight(Rank, "fuse_room_alert", userID))
                 {
                     Cmds += "%";
                     Cmds += ":roomalert MESSAGE - Sends a moderator alert to a whole room%";
                 }
 
-                if (rankManager.containsRight(Rank, "fuse_kick"))
+                if (rankManager.containsRight(Rank, "fuse_kick", userID))
                 {
                     Cmds += "%";
                     Cmds += ":kick [MESSAGE] - Kicks a user from the room they are in%";
                 }
 
-                if (rankManager.containsRight(Rank, "fuse_room_kick"))
+                if (rankManager.containsRight(Rank, "fuse_room_kick", userID))
                 {
                     Cmds += "%";
                     Cmds += ":roomkick [MESSAGE] - Kicks all users but you from the room";
                 }
 
-                if (rankManager.containsRight(Rank, "fuse_mute"))
+                if (rankManager.containsRight(Rank, "fuse_mute", userID))
                 {
                     Cmds += "%";
                     Cmds += ":shutup NAME [MESSAGE] - Stops a user from using say/shout%";
                     Cmds += ":unmute NAME - Allows a user to say/shout again%";
                 }
 
-                if (rankManager.containsRight(Rank, "fuse_room_mute"))
+                if (rankManager.containsRight(Rank, "fuse_room_mute", userID))
                 {
                     Cmds += "%";
                     Cmds += ":roomshutup [MESSAGE] - Stops all users in the room from using say/shout%";
                     Cmds += ":roomunmute Allows all users in the room to say/shout again%";
                 }
 
-                if (rankManager.containsRight(Rank, "fuse_ban"))
+                if (rankManager.containsRight(Rank, "fuse_ban", userID))
                 {
                     Cmds += "%";
                     Cmds += ":ban NAME HOURS REASON - Bans a user for the how many hours%";
                 }
 
-                if (rankManager.containsRight(Rank, "fuse_superban"))
+                if (rankManager.containsRight(Rank, "fuse_superban", userID))
                 {
                     Cmds += "%";
                     Cmds += ":superban NAME HOURS REASON - Bans a user and there IP for how many hours%";
                 }
 
-                if (rankManager.containsRight(Rank, "fuse_administrator_access"))
+                if (rankManager.containsRight(Rank, "fuse_administrator_access", userID))
                 {
                     Cmds += "%";
                     Cmds += ":ha MESSAGE - Sends an alert to all online users%";
@@ -373,20 +373,20 @@ namespace Holo.Managers
                     Cmds += ":sendme PACKET - Sends a packet to your self (For debuging)%";
                 }
 
-                if (rankManager.containsRight(Rank, "fuse_alert"))
+                if (rankManager.containsRight(Rank, "fuse_alert", userID))
                 {
                     Cmds += "%";
                     Cmds += ":ra MESSAGE - Sends an alert to all online users with the same rank as you%";
                 }
 
-                if (rankManager.containsRight(Rank, "fuse_teleport"))
+                if (rankManager.containsRight(Rank, "fuse_teleport", userID))
                 {
                     Cmds += "%";
                     Cmds += ":teleport - Toggles your movent to teleport mode on/off%";
                     Cmds += ":warp X Y - Teleports you to the co-ordinates entered%";
                 }
 
-                if (rankManager.containsRight(Rank, "fuse_moderator_access"))
+                if (rankManager.containsRight(Rank, "fuse_moderator_access", userID))
                 {
                     Cmds += "%";
                     Cmds += ":userinfo NAME/:ui NAME - Displays infomation about a user%";

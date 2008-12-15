@@ -86,6 +86,7 @@ namespace Holo.Virtual.Users
         internal byte _Rank;
         internal int _Credits;
         internal int _Tickets;
+        internal System.Collections.Generic.List<string> _fuserights;
 
         internal string _nowBadge;
         internal bool _clubMember;
@@ -224,7 +225,7 @@ namespace Holo.Virtual.Users
 
                 connectionSocket.BeginReceive(dataBuffer, 0, dataBuffer.Length, SocketFlags.None, new AsyncCallback(dataArrival), null);
             }
-            catch { Disconnect(); }
+            catch (Exception e) { Out.WriteDCError(e.ToString()); Disconnect(); }
         }
         #endregion  
 
@@ -320,7 +321,6 @@ namespace Holo.Virtual.Users
 
                                 this.userID = myID;
                                 DataRow dRow = dbClient.getRow("SELECT name,figure,sex,mission,rank,consolemission FROM users WHERE id = '" + myID + "'");
-                                dbClient.Close();
                                 _Username = Convert.ToString(dRow[0]);
                                 _Figure = Convert.ToString(dRow[1]);
                                 _Sex = Convert.ToChar(dRow[2]);
@@ -331,7 +331,13 @@ namespace Holo.Virtual.Users
                                 _isLoggedIn = true;
 
                                 sendData("DA" + "QBHIIIKHJIPAIQAdd-MM-yyyy" + Convert.ToChar(2) + "SAHPB/client" + Convert.ToChar(2) + "QBH");
-                                sendData("@B" + rankManager.fuseRights(_Rank));
+                                
+                                DataColumn dCol = dbClient.getColumn("SELECT fuseright FROM users_fuserights WHERE userid = " + userID);
+                                _fuserights = new System.Collections.Generic.List<string>();
+                                foreach (DataRow dbRow in dCol.Table.Rows)
+                                    _fuserights.Add(Convert.ToString(dbRow[0]));
+                                dbClient.Close();
+                                sendData("@B" + rankManager.fuseRights(_Rank, userID));
                                 sendData("DbIH");
                                 sendData("@C");
 
@@ -650,7 +656,7 @@ namespace Holo.Virtual.Users
                                 bool canSeeHiddenNames = false;
 
                                 if (Type != 0) // Publicroom
-                                    canSeeHiddenNames = rankManager.containsRight(_Rank, "fuse_enter_locked_rooms");
+                                    canSeeHiddenNames = rankManager.containsRight(_Rank, "fuse_enter_locked_rooms", userID);
 
                                 foreach (DataRow dRow in dTable.Rows)
                                 {
@@ -741,7 +747,7 @@ namespace Holo.Virtual.Users
 
                         case "@Q": // Navigator - perform guestroom search on name/owner with a given criticeria
                             {
-                                bool seeAllRoomOwners = rankManager.containsRight(_Rank, "fuse_see_all_roomowners");
+                                bool seeAllRoomOwners = rankManager.containsRight(_Rank, "fuse_see_all_roomowners", userID);
                                 Database dbClient = new Database(false, true, 150);
                                 dbClient.addParameterWithValue("search", currentPacket.Substring(2));
                                 dbClient.addParameterWithValue("max", Config.Navigator_roomSearch_maxResults);
@@ -775,7 +781,7 @@ namespace Holo.Virtual.Users
                                 if (dRow.Table.Rows.Count > 0) // Guestroom does exist
                                 {
                                     StringBuilder Details = new StringBuilder(Encoding.encodeVL64(Convert.ToInt32(dRow[5])) + Encoding.encodeVL64(Convert.ToInt32(dRow[4])) + Encoding.encodeVL64(roomID));
-                                    if (Convert.ToString(dRow[6]) == "0" && rankManager.containsRight(_Rank, "fuse_see_all_roomowners")) // The room owner has decided to hide his name at this room, and this user hasn't got the fuseright to see all room owners, hide the name
+                                    if (Convert.ToString(dRow[6]) == "0" && rankManager.containsRight(_Rank, "fuse_see_all_roomowners", userID)) // The room owner has decided to hide his name at this room, and this user hasn't got the fuseright to see all room owners, hide the name
                                         Details.Append("-");
                                     else
                                         Details.Append(Convert.ToString(dRow[1]));
@@ -809,8 +815,8 @@ namespace Holo.Virtual.Users
                                 if (roomIDs.Length > 0)
                                 {
                                     int guestRoomAmount = 0;
-                                    string nameString; 
-                                    bool seeHiddenRoomOwners = rankManager.containsRight(_Rank, "fuse_enter_locked_rooms");
+                                    string nameString;
+                                    bool seeHiddenRoomOwners = rankManager.containsRight(_Rank, "fuse_enter_locked_rooms", userID);
                                     StringBuilder Rooms = new StringBuilder();
                                     DataTable dTable = dbClient.getTable("SELECT name,owner,state,showname,visitors_now,visitors_max,description,category,ccts,id FROM rooms WHERE " + roomIDs);
                                     foreach (DataRow dRow in dTable.Rows)
@@ -1147,7 +1153,7 @@ namespace Holo.Virtual.Users
                                     Database dbClient = new Database(true, false, 83);
                                     if (_teleporterID == 0)
                                     {
-                                        bool allowEnterLockedRooms = rankManager.containsRight(_Rank, "fuse_enter_locked_rooms");
+                                        bool allowEnterLockedRooms = rankManager.containsRight(_Rank, "fuse_enter_locked_rooms", userID);
                                         int accessLevel = dbClient.getInteger("SELECT state FROM rooms WHERE id = '" + roomID + "'");
                                         if (accessLevel == 3 && _clubMember == false && allowEnterLockedRooms == false) // Room is only for club subscribers and the user isn't club and hasn't got the fuseright for entering all rooms nomatter the state
                                         {
@@ -1166,7 +1172,7 @@ namespace Holo.Virtual.Users
                                         if (nowVisitors > 0)
                                         {
                                             int maxVisitors = dbClient.getInteger("SELECT SUM(visitors_max) FROM rooms WHERE id = '" + roomID + "'");
-                                            if (nowVisitors >= maxVisitors && rankManager.containsRight(_Rank, "fuse_enter_full_rooms") == false)
+                                            if (nowVisitors >= maxVisitors && rankManager.containsRight(_Rank, "fuse_enter_full_rooms", userID) == false)
                                             {
                                                 if (isPublicroom == false)
                                                     sendData("C`" + "I");
@@ -1210,7 +1216,7 @@ namespace Holo.Virtual.Users
                                     if (_hasRights == false)
                                         _hasRights = dbClient.findsResult("SELECT id FROM rooms WHERE id = '" + _roomID + "' AND superusers = '1'");
 
-                                    if (_teleporterID == 0 && _isOwner == false && rankManager.containsRight(_Rank, "fuse_enter_locked_rooms") == false)
+                                    if (_teleporterID == 0 && _isOwner == false && rankManager.containsRight(_Rank, "fuse_enter_locked_rooms", userID) == false)
                                     {
                                         int accessFlag = dbClient.getInteger("SELECT state FROM rooms WHERE id = '" + _roomID + "'");
                                         if (_ROOMACCESS_PRIMARY_OK == false && accessFlag != 2)
@@ -1267,7 +1273,7 @@ namespace Holo.Virtual.Users
 
                         case "Ab": // Answer guestroom doorbell
                             {
-                                if (_hasRights == false && rankManager.containsRight(roomUser.User._Rank, "fuse_enter_locked_rooms"))
+                                if (_hasRights == false && rankManager.containsRight(roomUser.User._Rank, "fuse_enter_locked_rooms", userID))
                                     return;
 
                                 string ringer = currentPacket.Substring(4, Encoding.decodeB64(currentPacket.Substring(2, 2)));
@@ -1319,7 +1325,7 @@ namespace Holo.Virtual.Users
 
                                     if (_isOwner == false)
                                     {
-                                        _isOwner = rankManager.containsRight(_Rank, "fuse_any_room_controller");
+                                        _isOwner = rankManager.containsRight(_Rank, "fuse_any_room_controller", userID);
                                     }
                                     if (_isOwner)
                                     {
@@ -1458,7 +1464,7 @@ namespace Holo.Virtual.Users
                                     #region Alert single user
                                     case "HH": // Alert single user
                                         {
-                                            if (rankManager.containsRight(_Rank, "fuse_alert") == false) { sendData("BK" + stringManager.getString("modtool_accesserror")); return; }
+                                            if (rankManager.containsRight(_Rank, "fuse_alert", userID) == false) { sendData("BK" + stringManager.getString("modtool_accesserror")); return; }
 
                                             messageLength = Encoding.decodeB64(currentPacket.Substring(4, 2));
                                             Message = currentPacket.Substring(6, messageLength).Replace(Convert.ToChar(1).ToString(), " ");
@@ -1484,7 +1490,7 @@ namespace Holo.Virtual.Users
                                     #region Kick single user from room
                                     case "HI": // Kick single user from room
                                         {
-                                            if (rankManager.containsRight(_Rank, "fuse_kick") == false) { sendData("BK" + stringManager.getString("modtool_accesserror")); return; }
+                                            if (rankManager.containsRight(_Rank, "fuse_kick", userID) == false) { sendData("BK" + stringManager.getString("modtool_accesserror")); return; }
 
                                             messageLength = Encoding.decodeB64(currentPacket.Substring(4, 2));
                                             Message = currentPacket.Substring(6, messageLength).Replace(Convert.ToChar(1).ToString(), " ");
@@ -1518,7 +1524,7 @@ namespace Holo.Virtual.Users
                                     #region Ban single user
                                     case "HJ": // Ban single user / IP
                                         {
-                                            if (rankManager.containsRight(_Rank, "fuse_ban") == false) { sendData("BK" + stringManager.getString("modtool_accesserror")); return; }
+                                            if (rankManager.containsRight(_Rank, "fuse_ban", userID) == false) { sendData("BK" + stringManager.getString("modtool_accesserror")); return; }
 
                                             int targetUserLength = 0;
                                             int banHours = 0;
@@ -1554,7 +1560,7 @@ namespace Holo.Virtual.Users
                                                 int targetID = Convert.ToInt32(dRow["id"]);
                                                 string Report = "";
                                                 staffManager.addStaffMessage("ban", userID, targetID, Message, staffNote);
-                                                if (banIP && rankManager.containsRight(_Rank, "fuse_superban")) // IP ban is chosen and allowed for this staff member
+                                                if (banIP && rankManager.containsRight(_Rank, "fuse_superban", userID)) // IP ban is chosen and allowed for this staff member
                                                 {
                                                     userManager.setBan(Convert.ToString(dRow["ipaddress_last"]), banHours, Message);
                                                     Report = userManager.generateBanReport(Convert.ToString(dRow["ipaddress_last"]));
@@ -1574,7 +1580,7 @@ namespace Holo.Virtual.Users
                                     #region Room alert
                                     case "IH": // Alert all users in current room
                                         {
-                                            if (rankManager.containsRight(_Rank, "fuse_room_alert") == false) { sendData("BK" + stringManager.getString("modtool_accesserror")); return; }
+                                            if (rankManager.containsRight(_Rank, "fuse_room_alert", userID) == false) { sendData("BK" + stringManager.getString("modtool_accesserror")); return; }
                                             if (Room == null || roomUser == null) { return; }
 
                                             messageLength = Encoding.decodeB64(currentPacket.Substring(4, 2));
@@ -1594,7 +1600,7 @@ namespace Holo.Virtual.Users
                                     #region Room kick
                                     case "II": // Kick all users below users rank from room
                                         {
-                                            if (rankManager.containsRight(_Rank, "fuse_room_kick") == false) { sendData("BK" + stringManager.getString("modtool_accesserror")); return; }
+                                            if (rankManager.containsRight(_Rank, "fuse_room_kick", userID) == false) { sendData("BK" + stringManager.getString("modtool_accesserror")); return; }
                                             if (Room == null || roomUser == null) { return; }
 
                                             messageLength = Encoding.decodeB64(currentPacket.Substring(4, 2));
@@ -1669,7 +1675,7 @@ namespace Holo.Virtual.Users
                         #region Staff Side
                         case "CG": // CFH center - reply call
                             {
-                                if (rankManager.containsRight(_Rank, "fuse_receive_calls_for_help") == false)
+                                if (rankManager.containsRight(_Rank, "fuse_receive_calls_for_help", userID) == false)
                                     return;
                                 int cfhID = Encoding.decodeVL64(currentPacket.Substring(4, Encoding.decodeB64(currentPacket.Substring(2, 2))));
                                 string cfhReply = currentPacket.Substring(Encoding.decodeB64(currentPacket.Substring(2, 2)) + 6);
@@ -1694,7 +1700,7 @@ namespace Holo.Virtual.Users
 
                         case "CF": // CFH center - Delete (Downgrade)
                             {
-                                if (rankManager.containsRight(_Rank, "fuse_receive_calls_for_help") == false)
+                                if (rankManager.containsRight(_Rank, "fuse_receive_calls_for_help", userID) == false)
                                     return;
                                 int cfhID = Encoding.decodeVL64(currentPacket.Substring(4, Encoding.decodeB64(currentPacket.Substring(2, 2))));
                                 Database dbClient = new Database(true, false, 93);
@@ -1736,7 +1742,7 @@ namespace Holo.Virtual.Users
 
                         case "EC": // Go to the room that the call for help was sent from
                             {
-                                if (rankManager.containsRight(_Rank, "fuse_receive_calls_for_help") == false)
+                                if (rankManager.containsRight(_Rank, "fuse_receive_calls_for_help", userID) == false)
                                     return;
                                 int idLength = Encoding.decodeB64(currentPacket.Substring(2, 2));
                                 int cfhID = Encoding.decodeVL64(currentPacket.Substring(4, idLength));
@@ -1939,7 +1945,7 @@ namespace Holo.Virtual.Users
                                         statusManager.addStatus("dance", "");
                                     else
                                     {
-                                        if (rankManager.containsRight(_Rank, "fuse_use_club_dance") == false) { return; }
+                                        if (rankManager.containsRight(_Rank, "fuse_use_club_dance", userID) == false) { return; }
                                         int danceID = Encoding.decodeVL64(currentPacket.Substring(2));
                                         if (danceID < 0 || danceID > 4) { return; }
                                         statusManager.addStatus("dance", danceID.ToString());
@@ -2166,7 +2172,7 @@ namespace Holo.Virtual.Users
                                 if (_Target._roomID != _roomID)
                                     return;
 
-                                if (_Target._isOwner && (_Target._Rank > _Rank || rankManager.containsRight(_Target._Rank, "fuse_any_room_controller")))
+                                if (_Target._isOwner && (_Target._Rank > _Rank || rankManager.containsRight(_Target._Rank, "fuse_any_room_controller", userID)))
                                     return;
 
                                 _Target.roomUser.walkLock = true;
@@ -2189,7 +2195,7 @@ namespace Holo.Virtual.Users
                                 if (_Target._roomID != _roomID)
                                     return;
 
-                                if (_Target._isOwner && (_Target._Rank > _Rank || rankManager.containsRight(_Target._Rank, "fuse_any_room_controller")))
+                                if (_Target._isOwner && (_Target._Rank > _Rank || rankManager.containsRight(_Target._Rank, "fuse_any_room_controller", userID)))
                                     return;
 
                                 string banExpireMoment = DateTime.Now.AddMinutes(Config.Rooms_roomBan_banDuration).ToString();
@@ -3796,13 +3802,13 @@ namespace Holo.Virtual.Users
                     #region :commands
                     case "commands": // Displays a list of commands
                     case "cmds": // Displays a list of commands
-                            sendData(userManager.generateCommands(_Rank));
+                        sendData(userManager.generateCommands(_Rank, userID));
                             break;
                     #endregion
 
                     #region :whosonline
                     case "whosonline": // Generates a list of users connected
-                        sendData(userManager.generateWhosOnline(rankManager.containsRight(_Rank, "fuse_administrator_access")));
+                            sendData(userManager.generateWhosOnline(rankManager.containsRight(_Rank, "fuse_administrator_access", userID)));
                         break;
                     #endregion
 
@@ -3829,7 +3835,7 @@ namespace Holo.Virtual.Users
                     #region :alert
                     case "alert": // Alert a virtual user
                         {
-                            if (rankManager.containsRight(_Rank, "fuse_alert") == false)
+                            if (rankManager.containsRight(_Rank, "fuse_alert", userID) == false)
                                 return false;
                             else
                             {
@@ -3847,7 +3853,7 @@ namespace Holo.Virtual.Users
                     #region :roomalert
                     case "roomalert": // Alert all virtual users in current virtual room
                         {
-                            if (rankManager.containsRight(_Rank, "fuse_room_alert") == false)
+                            if (rankManager.containsRight(_Rank, "fuse_room_alert", userID) == false)
                                 return false;
                             else
                             {
@@ -3862,7 +3868,7 @@ namespace Holo.Virtual.Users
                     #region :kick
                     case "kick": // Kicks a virtual user from room
                         {
-                            if (rankManager.containsRight(_Rank, "fuse_kick") == false)
+                            if (rankManager.containsRight(_Rank, "fuse_kick", userID) == false)
                                 return false;
                             else
                             {
@@ -3887,7 +3893,7 @@ namespace Holo.Virtual.Users
                     #region :roomkick
                     case "roomkick": // Kicks all virtual users below rank from virtual room
                         {
-                            if (rankManager.containsRight(_Rank, "fuse_room_kick") == false)
+                            if (rankManager.containsRight(_Rank, "fuse_room_kick", userID) == false)
                                 return false;
                             else
                             {
@@ -3903,7 +3909,7 @@ namespace Holo.Virtual.Users
                     #region :shutup/:unmute
                     case "shutup": // Mutes a virtual user (disabling it from chat)
                         {
-                            if (rankManager.containsRight(_Rank, "fuse_mute") == false)
+                            if (rankManager.containsRight(_Rank, "fuse_mute", userID) == false)
                                 return false;
                             else
                             {
@@ -3924,7 +3930,7 @@ namespace Holo.Virtual.Users
 
                     case "unmute": // Unmutes a virtual user (enabling it to chat again)
                         {
-                            if (rankManager.containsRight(_Rank, "fuse_mute") == false)
+                            if (rankManager.containsRight(_Rank, "fuse_mute", userID) == false)
                                 return false;
                             else
                             {
@@ -3946,7 +3952,7 @@ namespace Holo.Virtual.Users
                     #region :roomshutup/:roomunmute
                     case "roomshutup": // Mutes all virtual users in the current room from chat. Only user's that have a lower rank than this user are affected.
                         {
-                            if (rankManager.containsRight(_Rank, "fuse_room_mute") == false)
+                            if (rankManager.containsRight(_Rank, "fuse_room_mute", userID) == false)
                                 return false;
                             else
                             {
@@ -3960,7 +3966,7 @@ namespace Holo.Virtual.Users
 
                     case "roomunmute": // Unmutes all the muted virtual users in this room (who's rank is lower than this user's rank), making them able to chat again
                         {
-                            if (rankManager.containsRight(_Rank, "fuse_room_mute") == false)
+                            if (rankManager.containsRight(_Rank, "fuse_room_mute", userID) == false)
                                 return false;
                             else
                             {
@@ -3975,7 +3981,7 @@ namespace Holo.Virtual.Users
                     #region :ban/:superban
                     case "ban": // Bans a virtual user from server (no IP ban)
                         {
-                            if (rankManager.containsRight(_Rank, "fuse_ban") == false)
+                            if (rankManager.containsRight(_Rank, "fuse_ban", userID) == false)
                                 return false;
                             else
                             {
@@ -4006,7 +4012,7 @@ namespace Holo.Virtual.Users
 
                     case "superban": // Bans an IP address and all virtual user's that used this IP address for their last access from the system
                         {
-                            if (rankManager.containsRight(_Rank, "fuse_superban") == false)
+                            if (rankManager.containsRight(_Rank, "fuse_superban", userID) == false)
                                 return false;
                             else
                             {
@@ -4044,7 +4050,7 @@ namespace Holo.Virtual.Users
                     case "ha": // Broadcoasts a message to all virtual users (hotel alert)
                     case "hotelalert": // Broadcoasts a message to all virtual users (hotel alert)
                         {
-                            if (rankManager.containsRight(_Rank, "fuse_administrator_access") == false)
+                            if (rankManager.containsRight(_Rank, "fuse_administrator_access", userID) == false)
                                 return false;
                             else
                             {
@@ -4059,7 +4065,7 @@ namespace Holo.Virtual.Users
                     #region :offline
                     case "offline": // Broadcoasts a message that the server will shutdown in xx minutes
                         {
-                            if (rankManager.containsRight(_Rank, "fuse_administrator_access") == false)
+                            if (rankManager.containsRight(_Rank, "fuse_administrator_access", userID) == false)
                                 return false;
                             else
                             {
@@ -4074,7 +4080,7 @@ namespace Holo.Virtual.Users
                     #region :ra
                     case "ra": // Broadcoasts a message to all users with the same rank (rank alert)
                         {
-                            if (rankManager.containsRight(_Rank, "fuse_alert") == false)
+                            if (rankManager.containsRight(_Rank, "fuse_alert", userID) == false)
                                 return false;
                             else
                             {
@@ -4091,7 +4097,7 @@ namespace Holo.Virtual.Users
                     #region :teleport/:warp
                     case "teleport": // Toggles the user's teleport ability on/off
                         {
-                            if (rankManager.containsRight(_Rank, "fuse_administrator_access") == false)
+                            if (rankManager.containsRight(_Rank, "fuse_administrator_access", userID) == false)
                                 return false;
                             else
                             {
@@ -4103,7 +4109,7 @@ namespace Holo.Virtual.Users
 
                     case "warp": // Warps the virtual user to a certain X,Y coordinate
                         {
-                            if (rankManager.containsRight(_Rank, "fuse_administrator_access") == false)
+                            if (rankManager.containsRight(_Rank, "fuse_administrator_access", userID) == false)
                                 return false;
                             else
                             {
@@ -4123,7 +4129,7 @@ namespace Holo.Virtual.Users
                     case "ui":
                     case "userinfo": // Generates a list of information about a certain virtual user
                         {
-                            if (rankManager.containsRight(_Rank, "fuse_moderator_access") == false)
+                            if (rankManager.containsRight(_Rank, "fuse_moderator_access", userID) == false)
                                 return false;
                             else
                                 sendData("BK" + userManager.generateUserInfo(userManager.getUserID(args[1]), _Rank));
@@ -4134,7 +4140,7 @@ namespace Holo.Virtual.Users
                     #region :cords
                     case "cords": // Returns the cords of the user
                         {
-                            if (rankManager.containsRight(_Rank, "fuse_administrator_access") == false)
+                            if (rankManager.containsRight(_Rank, "fuse_administrator_access", userID) == false)
                                 return false;
                             else
                                 sendData("BK" + "X: " + roomUser.X + "\rY: " + roomUser.Y + "\rH: " + roomUser.H);
@@ -4145,7 +4151,7 @@ namespace Holo.Virtual.Users
                     #region :sendme
                     case "sendme": // Sends the user the packet they enter (Debug Reasons);
                         {
-                            if (rankManager.containsRight(_Rank, "fuse_administrator_access") == false)
+                            if (rankManager.containsRight(_Rank, "fuse_administrator_access", userID) == false)
                                 return false;
                             else
                                 sendData(stringManager.wrapParameters(args, 1));
@@ -4156,7 +4162,7 @@ namespace Holo.Virtual.Users
                     #region :refresh
                     case "refresh": // Updates certain parts of the server.
                         {
-                            if (rankManager.containsRight(_Rank, "fuse_administrator_access") == false)
+                            if (rankManager.containsRight(_Rank, "fuse_administrator_access", userID) == false)
                                 return false;
                             else
                             {

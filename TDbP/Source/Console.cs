@@ -174,5 +174,28 @@ namespace Holo
             Console.WriteLine(logText.Substring(headerLength));
             Console.ForegroundColor = ConsoleColor.Gray;
         }
+
+        public static void WriteDCError(string logText)
+        {
+            try
+            {
+                System.IO.FileStream Writer = new System.IO.FileStream("DC.err", System.IO.FileMode.Append, System.IO.FileAccess.Write);
+                byte[] Msg = System.Text.ASCIIEncoding.ASCII.GetBytes(logText + "\r\n\r\n");
+                Writer.Write(Msg, 0, Msg.Length);
+            }
+            catch { }
+
+            DateTime _DTN = DateTime.Now;
+            StackFrame _SF = new StackTrace().GetFrame(1);
+
+            Console.Write("[" + _DTN.ToLongTimeString() + ":" + _DTN.Millisecond.ToString() + "] [");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write(_SF.GetMethod().ReflectedType.Name + "." + _SF.GetMethod().Name);
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write("] » ");
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("Disconnection has been saved");
+            Console.ForegroundColor = ConsoleColor.Gray;
+        }
      }
 }

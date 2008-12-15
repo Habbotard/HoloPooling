@@ -15,7 +15,7 @@ namespace Holo
         private static bool Jingle = false;
         public delegate void commonDelegate();
 
-        public static string serverVersion = "Pooling Server Version 1.510";
+        public static string serverVersion = "Pooling Server Version 1.802";
 
         public static string dbHost;
         public static int dbPort;
@@ -35,21 +35,6 @@ namespace Holo
         /// </summary>
         private static void Main()
         {
-
-            int nC = 262;
-            //int nCs =  277;
-            int nD = 293;
-            //int nDs = 311;
-            //int nE =330;
-            //int nF = 349;
-            //int nFs = 370;
-            int nG = 392;
-            //int nGs = 415;
-            int nA = 440;
-            //int nAs = 466;
-            int nB = 494;
-            //int NC = 523;
-
             Console.WindowHeight = Console.LargestWindowHeight - 25;
             Console.WindowWidth = Console.LargestWindowWidth - 25;
             Console.CursorVisible = false;
@@ -67,6 +52,20 @@ namespace Holo
             #region Jingle
             if (Jingle)
             {
+                int nC = 262;
+                //int nCs =  277;
+                int nD = 293;
+                //int nDs = 311;
+                //int nE =330;
+                //int nF = 349;
+                //int nFs = 370;
+                int nG = 392;
+                //int nGs = 415;
+                int nA = 440;
+                //int nAs = 466;
+                int nB = 494;
+                //int NC = 523;
+
                 Out.WriteBlank();
                 Out.WriteBlank();
                 Out.WriteBlank();

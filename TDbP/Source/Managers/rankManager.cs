@@ -62,7 +62,8 @@ namespace Holo.Managers
         /// Returns the fuserights string for a certain user rank.
         /// </summary>
         /// <param name="rankID">The ID of the user rank.</param>
-        public static string fuseRights(byte rankID)
+        /// <param name="userID">The ID of the user.</param>
+        public static string fuseRights(byte rankID, int userID)
         {
             string[] fuseRights = ((userRank)userRanks[rankID]).fuseRights;
             StringBuilder strBuilder = new StringBuilder();
@@ -70,23 +71,42 @@ namespace Holo.Managers
             for (int i = 0; i < fuseRights.Length; i++)
                 strBuilder.Append(fuseRights[i] + Convert.ToChar(2));
 
+            foreach (string fuseright in userManager.getUser(userID)._fuserights)
+                strBuilder.Append(fuseright + Convert.ToChar(2));
+
             return strBuilder.ToString();
         }
+
         /// <summary>
-        /// Returns a bool that indicates if a certain user rank contains a certain fuseright.
+        /// Returns a bool that indicates if a certain user has a certain fuseright.
         /// </summary>
         /// <param name="rankID">The ID of the user rank.</param>
         /// <param name="fuseRight">The fuseright to look for.</param>
-        /// <returns></returns>
-        public static bool containsRight(byte rankID, string fuseRight)
+        /// <param name="userID">The ID of the user.</param>
+        public static bool containsRight(byte rankID, string fuseRight, int userID)
         {
             userRank objRank = ((userRank)userRanks[rankID]);
             for (int i = 0; i < objRank.fuseRights.Length; i++)
                 if (objRank.fuseRights[i] == fuseRight)
                     return true;
+            return userManager.getUser(userID)._fuserights.Contains(fuseRight);
+        }
 
+        /// <summary>
+        /// Returns a bool that indicates if a certain user has a certain fuseright.
+        /// </summary>
+        /// <param name="rankID">The ID of the user rank.</param>
+        /// <param name="fuseRight">The fuseright to look for.</param>
+        /// <returns></returns>
+        public static bool containsRankRight(byte rankID, string fuseRight)
+        {
+            userRank objRank = ((userRank)userRanks[rankID]);
+            for (int i = 0; i < objRank.fuseRights.Length; i++)
+                if (objRank.fuseRights[i] == fuseRight)
+                    return true;
             return false;
         }
+        
         public static gameRank getGameRank(bool isBattleBall, string Title)
         {
             gameRank[] Ranks = null;

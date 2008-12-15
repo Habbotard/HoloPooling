@@ -46,7 +46,7 @@ namespace Holo.Virtual.Rooms
             try
             {
                 foreach (virtualRoomUser roomUser in ((Hashtable)_Users.Clone()).Values)
-                    if (roomUser.User._hasRights || roomUser.User._isOwner || rankManager.containsRight(roomUser.User._Rank, "fuse_pick_up_any_furni"))
+                    if (roomUser.User._hasRights || roomUser.User._isOwner || rankManager.containsRight(roomUser.User._Rank, "fuse_pick_up_any_furni", roomUser.userID))
                         roomUser.User.sendData(Data);
 
             }

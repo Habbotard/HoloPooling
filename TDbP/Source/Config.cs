@@ -31,10 +31,6 @@ namespace Holo
         /// </summary>
         internal static bool enableRecycler;
         /// <summary>
-        /// The minimum rank that a virtual user has to have in order to receive CFH (Call for Help) calls from other virtual users. In most situations 5 and higher.
-        /// </summary>
-        internal static byte Moderacy_ReceiveCFHs_minRank;
-        /// <summary>
         /// Specifies the amount of sips that a virtual user should take from his drink/item before vanishing it.
         /// </summary>
         internal static int Statuses_itemCarrying_SipAmount; // Better, a byte
@@ -129,13 +125,6 @@ namespace Holo
             else
                 Out.WriteLine("Trading disabled.");
 
-            for(byte i = 1; i <= 7; i++) // Get the lowest user rank that is able to receive CFHs
-                if (rankManager.containsRight(i,"fuse_receive_calls_for_help"))
-                {
-                    Moderacy_ReceiveCFHs_minRank = i;
-                    break;
-                }
-
             Rooms_LoadAvertisement_img = getTableEntry("rooms_loadadvertisement_img");
             if (Rooms_LoadAvertisement_img != "")
             {
@@ -157,7 +146,7 @@ namespace Holo
             Navigator_Favourites_maxRooms = int.Parse(getTableEntry("navigator_favourites_maxrooms"));
             Soundmachine_burnToDisk_diskTemplateID = int.Parse(getTableEntry("soundmachine_burntodisk_disktid"));
             Database dbClient = new Database(true, true, 2);
-            Minimum_CFH_Rank = byte.Parse(dbClient.getString("SELECT minrank FROM rank_fuserights WHERE fuseright = 'fuse_receive_calls_for_help'"));
+            Minimum_CFH_Rank = byte.Parse(dbClient.getString("SELECT minrank FROM rank_fuserights WHERE fuseright = 'fuse_receive_calls_for_help'")); // Not Dynamic Fuseright compatible
             
             Game_Countdown_Seconds = int.Parse(getTableEntry("game_countdown_seconds"));
             Game_scoreWindow_restartGame_Seconds = int.Parse(getTableEntry("game_scorewindow_restartgame_seconds"));
