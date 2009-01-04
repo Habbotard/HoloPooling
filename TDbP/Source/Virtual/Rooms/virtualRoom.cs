@@ -1926,7 +1926,7 @@ namespace Holo.Virtual.Rooms
                             _Room.setSquareState(Item.X, Item.Y, Length, Width, squareState.Open);
                         Item.Var = toStatus;
                         _Room.sendData("AX" + itemID + Convert.ToChar(2) + toStatus + Convert.ToChar(2));
-                        dbClient.runQuery("UPDATE furniture SET var = '" + toStatus + "' WHERE id = '" + itemID + "' LIMIT 1");
+                        dbClient.runQuery("UPDATE furniture SET var = @var WHERE id = " + itemID + " LIMIT 1");
                         #endregion
                     }
 
@@ -1937,7 +1937,7 @@ namespace Holo.Virtual.Rooms
                     return;
                 Item.Var = toStatus;
                 _Room.sendData("AX" + itemID + Convert.ToChar(2) + toStatus + Convert.ToChar(2));
-                dbClient.runQuery("UPDATE furniture SET var = '" + toStatus + "' WHERE id = '" + itemID + "' LIMIT 1");
+                dbClient.runQuery("UPDATE furniture SET var = @var WHERE id = " + itemID + " LIMIT 1");
             }  
 
             /// <summary>

@@ -98,3 +98,10 @@ C:\Documents and Settings\Administrator\Desktop\PUBLIC WIP Source\TDbP\obj\Debug
 C:\Documents and Settings\Administrator\Desktop\PUBLIC WIP Source\TDbP\bin\Debug\Holograph Emulator.exe
 C:\Documents and Settings\Administrator\Desktop\PUBLIC WIP Source\TDbP\bin\Debug\Holograph Emulator.pdb
 C:\Documents and Settings\Administrator\Desktop\PUBLIC WIP Source\TDbP\obj\Debug\Holograph Emulator.exe
+C:\Users\pb\Documents\SVNQ\TDbP\obj\Debug\Holograph Emulator.exe
+C:\Users\pb\Documents\SVNQ\TDbP\obj\Debug\Holograph Emulator.pdb
+C:\Users\pb\Documents\SVNQ\TDbP\bin\Debug\Holograph Emulator.exe
+C:\Users\pb\Documents\SVNQ\TDbP\bin\Debug\Holograph Emulator.pdb
+C:\Users\pb\Documents\SVNQ\TDbP\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\pb\Documents\SVNQ\TDbP\obj\Debug\Holo.Properties.Resources.resources
+C:\Users\pb\Documents\SVNQ\TDbP\obj\Debug\Holograph Emulator.csproj.GenerateResource.Cache
