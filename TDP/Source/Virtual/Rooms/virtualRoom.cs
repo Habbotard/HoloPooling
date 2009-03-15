@@ -81,7 +81,7 @@ namespace Holo.Virtual.Rooms
         /// <summary>
         /// Indicates if there is a user/bot/pet on a certain coord of the room map.
         /// </summary>
-        public bool[,] sqUNIT;
+        internal bool[,] sqUNIT;
         /// <summary>
         /// The item stack on a certain coord of the room map.
         /// </summary>

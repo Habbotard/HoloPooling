@@ -390,16 +390,11 @@ namespace Holo.Managers
                 }
             }
         }
-        public static string tradeItemList(int[] itemIDs)
+        public static string tradeItemList(System.Collections.Generic.List<int> itemIDs)
         {
             StringBuilder List = new StringBuilder();
-            for (int i = 0; i < itemIDs.Length; i++)
+            foreach (int i in itemIDs)
             {
-                if (itemIDs[i] == 0)
-                    continue;
-
-
-
                 DataRow dRow;
                 using (DatabaseClient dbClient = Eucalypt.dbManager.GetClient())
                 {

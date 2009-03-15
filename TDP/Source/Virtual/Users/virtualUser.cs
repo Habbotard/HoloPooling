@@ -119,8 +119,7 @@ namespace Holo.Virtual.Users
 
         internal int _tradePartnerUID = -1;
         internal bool _tradeAccept;
-        internal int[] _tradeItems = new int[65];
-        internal int _tradeItemCount;
+        internal List<int> _tradeItems = new List<int>();
 
         internal int _teleporterID;
         internal bool _hostsEvent;
@@ -254,6 +253,7 @@ namespace Holo.Virtual.Users
         }
         #endregion  
         #endregion
+
         #region Data sending
         /// <summary>
         /// Sends a single packet to the client via an asynchronous BeginSend action.
@@ -2018,11 +2018,19 @@ namespace Holo.Virtual.Users
 
                                     if (roomUser.SPECIAL_TELEPORTABLE)
                                     {
-                                        roomUser.X = goalX;
-                                        roomUser.Y = goalY;
-                                        roomUser.goalX = -1;
-                                        Room.Refresh(roomUser);
-                                        refreshAppearance(false, false, true);
+                                        int[] mapLimits = Room.getMapBorders();
+                                        if (goalX <= mapLimits[0] && goalY <= mapLimits[1] && goalX >= 0 && goalY >= 0) // Abort the teleport if they are trying to teleport outside the array
+                                        {
+                                            Room.sqUNIT[goalX, goalY] = true; // Block the new tile
+                                            Room.sqUNIT[roomUser.X, roomUser.Y] = false; // Unblock the old tile
+                                            roomUser.X = goalX;
+                                            roomUser.Y = goalY;
+                                            roomUser.goalX = -1;
+                                            Room.Refresh(roomUser);
+                                            refreshAppearance(false, false, true); // Use the poof animation
+                                        }
+                                        else
+                                            sendData("BK" + "Invalid teleport"); // You might want to remove/change this alert  
                                     }
                                     else
                                     {
@@ -3545,8 +3553,7 @@ namespace Holo.Virtual.Users
                                     if (templateID == 0)
                                         return;
 
-                                    _tradeItems[_tradeItemCount] = itemID;
-                                    _tradeItemCount++;
+                                    _tradeItems.Add(itemID);
                                     virtualUser Partner = Room.getUser(_tradePartnerRoomUID);
 
                                     this._tradeAccept = false;
@@ -3583,9 +3590,8 @@ namespace Holo.Virtual.Users
                                     if (Partner._tradeAccept)
                                     {
                                         StringBuilder sb = new StringBuilder("'a'='b'");
-                                        for (int i = 0; i < _tradeItemCount; i++)
-                                            if (_tradeItems[i] > 0)
-                                                sb.Append(" OR id = '" + this._tradeItems[i] + "'");
+                                        foreach(int i in _tradeItems)
+                                            sb.Append(" OR id = '" + i + "'");
 
                                         using (DatabaseClient dbClient = Eucalypt.dbManager.GetClient())
                                         {
@@ -3593,9 +3599,8 @@ namespace Holo.Virtual.Users
                                         }
                                         sb.Remove(7, sb.Length-7);
 
-                                        for (int i = 0; i < Partner._tradeItemCount; i++)
-                                            if (Partner._tradeItems[i] > 0)
-                                                sb.Append(" OR id = '" + Partner._tradeItems[i] + "'");
+                                        foreach (int i in Partner._tradeItems)
+                                            sb.Append(" OR id = '" + i + "'");
                                         using (DatabaseClient dbClient = Eucalypt.dbManager.GetClient())
                                         {
                                             dbClient.runQuery("UPDATE furniture SET ownerid = '" + this.userID + "',roomid = '0' WHERE" + sb.ToString());
@@ -4134,9 +4139,9 @@ namespace Holo.Virtual.Users
             {
                 virtualUser Partner = Room.getUser(_tradePartnerRoomUID);
                 StringBuilder tradeBoxes = new StringBuilder("Al" + _Username + Convert.ToChar(9) + _tradeAccept.ToString().ToLower() + Convert.ToChar(9));
-                if (_tradeItemCount > 0) { tradeBoxes.Append(catalogueManager.tradeItemList(_tradeItems)); }
+                if (_tradeItems.Count > 0) { tradeBoxes.Append(catalogueManager.tradeItemList(_tradeItems)); }
                 tradeBoxes.Append(Convert.ToChar(13) + Partner._Username + Convert.ToChar(9) + Partner._tradeAccept.ToString().ToLower() + Convert.ToChar(9));
-                if (Partner._tradeItemCount > 0) { tradeBoxes.Append(catalogueManager.tradeItemList(Partner._tradeItems)); }
+                if (_tradeItems.Count > 0) { tradeBoxes.Append(catalogueManager.tradeItemList(Partner._tradeItems)); }
                 sendData(tradeBoxes.ToString());
             }
         }
@@ -4155,15 +4160,13 @@ namespace Holo.Virtual.Users
 
                 this._tradePartnerRoomUID = -1;
                 this._tradeAccept = false;
-                this._tradeItems = new int[65];
-                this._tradeItemCount = 0;
+                this._tradeItems.Clear();
                 this.statusManager.removeStatus("trd");
                 this.roomUser.Refresh();
 
                 Partner._tradePartnerRoomUID = -1;
                 Partner._tradeAccept = false;
-                Partner._tradeItems = new int[65];
-                Partner._tradeItemCount = 0;
+                Partner._tradeItems.Clear();
                 Partner.statusManager.removeStatus("trd");
                 Partner.roomUser.Refresh();
             }
@@ -4589,11 +4592,19 @@ namespace Holo.Virtual.Users
                             {
                                 int X = int.Parse(args[1]);
                                 int Y = int.Parse(args[2]);
-                                roomUser.X = X;
-                                roomUser.Y = Y;
-                                roomUser.goalX = -1;
-                                Room.Refresh(roomUser);
-                                refreshAppearance(false, false, true); // Use the poof animation
+                                int[] mapLimits = Room.getMapBorders();
+                                if (X <= mapLimits[0] && Y <= mapLimits[1] && X >= 0 && Y >= 0) // Abort the teleport if they are trying to teleport outside the array
+                                {
+                                    Room.sqUNIT[X, Y] = true; // Block the new tile
+                                    Room.sqUNIT[roomUser.X, roomUser.Y] = false; // Unblock the old tile
+                                    roomUser.X = X;
+                                    roomUser.Y = Y;
+                                    roomUser.goalX = -1;
+                                    Room.Refresh(roomUser);
+                                    refreshAppearance(false, false, true);
+                                }
+                                else
+                                    sendData("BK" + "Invalid teleport"); // You might want to remove/change this alert  
                             }
                             break;
                         }

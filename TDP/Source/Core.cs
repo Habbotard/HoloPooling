@@ -221,7 +221,7 @@ namespace Holo
             Out.WriteLine("Tickets - (Reset!)s");
         }
         /// <summary>
-        /// Threaded void. Ran on background thread at lowest priority, interval = 3500 ms. Updates console title and online users count, active rooms count, peak connections count and peak online users count in database.
+        /// Threaded void. Ran on background thread at lowest priority, interval = 10000 ms. Updates console title and online users count, active rooms count, peak connections count and peak online users count in database.
         /// </summary>
         private static void monitorServer()
         {

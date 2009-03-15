@@ -142,3 +142,10 @@ C:\Documents and Settings\Administrator\Desktop\TDbP EXTREME edition\bin\Debug\H
 C:\Documents and Settings\Administrator\Desktop\TDbP EXTREME edition\obj\Debug\ResolveAssemblyReference.cache
 C:\Documents and Settings\Administrator\Desktop\TDbP EXTREME edition\obj\Debug\Holo.Properties.Resources.resources
 C:\Documents and Settings\Administrator\Desktop\TDbP EXTREME edition\obj\Debug\Holograph Emulator.csproj.GenerateResource.Cache
+C:\Users\pb\Documents\Retro\Holograph Emulator\Server\C#\TDP\TDP\obj\Debug\Holograph Emulator.exe
+C:\Users\pb\Documents\Retro\Holograph Emulator\Server\C#\TDP\TDP\obj\Debug\Holograph Emulator.pdb
+C:\Users\pb\Documents\Retro\Holograph Emulator\Server\C#\TDP\TDP\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\pb\Documents\Retro\Holograph Emulator\Server\C#\TDP\TDP\obj\Debug\Holo.Properties.Resources.resources
+C:\Users\pb\Documents\Retro\Holograph Emulator\Server\C#\TDP\TDP\obj\Debug\Holograph Emulator.csproj.GenerateResource.Cache
+C:\Users\pb\Documents\Retro\Holograph Emulator\Server\C#\TDP\TDP\bin\Debug\Holograph Emulator.exe
+C:\Users\pb\Documents\Retro\Holograph Emulator\Server\C#\TDP\TDP\bin\Debug\Holograph Emulator.pdb

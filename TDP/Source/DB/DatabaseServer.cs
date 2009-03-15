@@ -62,13 +62,13 @@ namespace Ion.Storage
         {
             if (sHost == null || sHost.Length == 0)
             {
-                Out.WriteLine("set your fucking ini!");
+                Out.WriteLine("Invalid mysql.ini configuration.");
                 
                 //throw new ArgumentException("sHost");
             }
             if (sUser == null || sUser.Length == 0)
             {
-                Out.WriteLine("set your fucking ini!");
+                Out.WriteLine("Invalid mysql.ini configuration.");
                 //throw new ArgumentException("sUser");
             }
 
