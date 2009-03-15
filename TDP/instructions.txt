@@ -1,0 +1,27 @@
+
+use the sql table setup as showed in this source, feel free
+to edit your old db into this new 1 (export structures and compare
+them using ExamDiff <-- google it)
+
+
+if you want to have a clean db, (which doesn't work yet)
+
+first run:
+	- holoserver.sql
+after that run
+	- data.sql
+
+
+
+
+you will need this to get this server to work:
+
+
+
+
+You will need MySQL connector 5.2.5 downloadable here:
+http://dev.mysql.com/downloads/connector/net/5.2.html
+
+Use v26 dcr's else you won't be able to login at all!
+net 3,5 + updates
+
